@@ -9,6 +9,7 @@ import subprocess
 # Created by: PyQt5 UI code generator 5.6
 #
 # WARNING! All changes made in this file will be lost!
+import threading
 import tkinter as tk
 from subprocess import STDOUT, PIPE
 from tkinter import filedialog
@@ -23,8 +24,8 @@ from SpeechToText import SpeechToText
 class UiMainWindow(object):
     textEdit = None
     file_path = None
-    st = SpeechToText()
-    co = Converter()
+    speechToTextObject = SpeechToText()
+    converterObject = Converter()
 
     def setupUi(self, main_window):
         main_window.setObjectName("MainWindow")
@@ -163,7 +164,7 @@ class UiMainWindow(object):
 
         self.actionSave_As = QtWidgets.QAction(main_window)
         self.actionSave_As.setObjectName("actionSave_As")
-        self.actionSave_As.triggered.connect(self.saveas_file)
+        self.actionSave_As.triggered.connect(self.saveAsFile)
 
         self.actionProperties = QtWidgets.QAction(main_window)
         self.actionProperties.setObjectName("actionProperties")
@@ -213,14 +214,14 @@ class UiMainWindow(object):
         self.MainWindow = main_window
         # QtCore.QObject.connect(self.toolButton, QtCore.SIGNAL("clicked()"), self.fontPicker())
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, main_window):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Dicta Code"))
+        main_window.setWindowTitle(_translate("MainWindow", "Dicta Code"))
         program_path = self.presentworkingdirectory()
         icon1 = QtGui.QIcon()
         # mainwindow icon setting
         icon1.addPixmap(QtGui.QPixmap(program_path + "/icons/New_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        MainWindow.setWindowIcon(icon1)
+        main_window.setWindowIcon(icon1)
         # self.label.setText(_translate("MainWindow", "Compiler:"))
         self.saveFileButton.setToolTip(_translate("MainWindow", "Save"))
         self.saveFileButton.setText(_translate("MainWindow", "..."))
@@ -278,7 +279,7 @@ class UiMainWindow(object):
             file1.close()
             self.statusbar.showMessage("File Created")
 
-    def saveas_file(self):
+    def saveAsFile(self):
         root = tk.Tk()
         root.withdraw()
         f = filedialog.asksaveasfilename(title="SaveAs", filetypes=[("Java File", "*.java"),
@@ -398,38 +399,36 @@ class UiMainWindow(object):
          #   self.textEdit.setFontFamily(font)
          '''
 
+    def threadListen(self):
+        thread = threading.Thread(target=self.start_listening)
+        thread.start()
+
+
+
     def start_listening(self):
-
         self.statusbar.showMessage("Listening")
-        # t = threading.Thread(name='myThread', target=self.st.listen())
-        # t.start()
-        self.st.listen()
-        # self.statusbar.showMessage("Listening")
-        # print(self.st.returnString())
-        if self.st.returnString() == "noInternet":
+        self.speechToTextObject.listen()
+        if self.speechToTextObject.returnString() == "noInternet":
             self.statusbar.showMessage("No Internet Connection")
-
-
-        elif self.st.returnString() == "":
+        elif self.speechToTextObject.returnString() == "":
             self.statusbar.showMessage("Google Speech Recognition could not understand audio")
-
         else:
-            self.s = self.st.returnString()
-            self.statusbar.showMessage("You Said: " + self.st.returnString())
+            self.s = self.speechToTextObject.returnString()
+            self.statusbar.showMessage("You Said: " + self.speechToTextObject.returnString())
             code = self.s;
             self.textEdit.insertPlainText(str(code))
 
     def convert(self):
-        print(self.co.putString(self.s))
+        print(self.converterObject.putString(self.s))
 
     def stop_listening(self):
         self.listening = False
 
     def changeRecording(self, value=1):
-        self.st.recordingtime = value
+        self.speechToTextObject.recordingtime = value
 
     def changeSilentTime(self, value=1):
-        self.st.silenttime = value
+        self.speechToTextObject.silenttime = value
 
     def fontPicker(self):
         f, ok = QFontDialog.getFont()
