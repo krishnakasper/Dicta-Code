@@ -307,6 +307,7 @@ class UiMainWindow(object):
             self.textEdit.setText(str(t))
             self.statusbar.showMessage("File Saved...")
             file.close()
+
         else:
             self.statusbar.showMessage("Please Open a file...")
 
@@ -415,8 +416,8 @@ class UiMainWindow(object):
         else:
             self.s = self.speechToTextObject.returnString()
             self.statusbar.showMessage("You Said: " + self.speechToTextObject.returnString())
-            code = self.s;
-            self.textEdit.insertPlainText(str(code))
+            code = self.converterObject.code(self.s);
+            self.textEdit.insertPlainText(code)
 
     def convert(self):
         print(self.converterObject.putString(self.s))

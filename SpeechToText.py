@@ -16,7 +16,6 @@ class SpeechToText:
         print("In SpeechToText class")
 
     def listen(self):
-        # print("hello")
         with sr.Microphone() as source:
             self.r.adjust_for_ambient_noise(source)
             self.energythreshold = self.r.energy_threshold
@@ -62,7 +61,7 @@ class SpeechToText:
         return False
 
     def returnString(self):
-        print(self.text)
+        # print(self.text)
         return self.text
 
     def returnEnergyThreshold(self):
