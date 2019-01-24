@@ -1,14 +1,11 @@
 class Converter:
-    str = ''
 
     def code(self, string):
-        self.str = string
-        # self.str=input("enter text")
-        msg = "not changed"
+        msg = "error"
         strs = ""
         x = 0
         tpy = ""
-        strs = self.str.split()
+        strs = string.split()
         if strs[x] == "variable" or strs[x] == "var":
             x = x + 1
             if strs[x] == "integer" or strs[x] == "int" or strs[x] == "in":

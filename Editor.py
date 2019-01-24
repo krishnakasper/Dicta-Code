@@ -127,7 +127,8 @@ class UiMainWindow(object):
         # icon7.addPixmap(QtGui.QPixmap(program_path + "/icons/save_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         # self.toolButton7.setIcon(icon)
         self.startButton.setObjectName("toolButton7")
-        self.startButton.clicked.connect(self.start_listening)
+        # self.startButton.clicked.connect(self.start_listening)
+        self.startButton.clicked.connect(self.threadListen)
 
         main_window.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(main_window)
