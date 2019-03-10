@@ -1,5 +1,4 @@
 import socket
-import threading
 
 import speech_recognition as sr
 
@@ -22,13 +21,8 @@ class SpeechToText:
             self.r.pause_threshold = self.silenttime
             print("Say Something")
             audio = self.r.listen(source)
-            # t = threading.Thread(name='myThread', target=self.converter(audio))
-            # t.start()
             self.converter(audio)
 
-    def shread(self):
-        t = threading.Thread(name='myThread', target=self.listen())
-        t.start()
 
     def changeRecording(self, value=1):
         self.recordingtime = value

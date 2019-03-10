@@ -353,12 +353,6 @@ class UiMainWindow(object):
             self.textEdit.redo()
 
     def compile_java(self):
-        # p=path+"\\"+ java_file
-        # print(self.file_path)
-        # subprocess.check_call(['/path/to/javac/javac', java_file])
-        # subprocess.Popen('set path=C:\Program Files\Java\jdk1.8.0_131\bin',shell=True)
-        # cmd= 'cd '+ path
-        # subprocess.Popen(cmd, shell=True)
         if self.file_path:
             cmd = 'javac ' + self.file_path
             proc = subprocess.Popen(cmd, shell=True)
@@ -387,19 +381,12 @@ class UiMainWindow(object):
         else:
             self.statusbar.showMessage("please select a file to run")
 
-    def presentworkingdirectory(self):
+    @staticmethod
+    def presentworkingdirectory():
         path = os.getcwd()
         return path
 
-    '''def font_choice(self):
-        print("hello")
-        #font = self.textBrowser.setFont(QFontDialog.getFont(0,self.textBrowser.font()))
-        f = QtGui.QFontDialog.getFont(True,QFont('Times',12),self.MainWindow,"choose Font")
-        print("h")
-        #QtGui.QFontDialog.setVisible(True)
-        #if valid:
-         #   self.textEdit.setFontFamily(font)
-         '''
+
 
     def threadListen(self):
         thread = threading.Thread(target=self.start_listening)
@@ -410,14 +397,16 @@ class UiMainWindow(object):
     def start_listening(self):
         self.statusbar.showMessage("Listening")
         self.speechToTextObject.listen()
+        print(self.speechToTextObject.returnString())
+        print(self.converterObject.optimizeInputString(self.speechToTextObject.returnString()))
         if self.speechToTextObject.returnString() == "noInternet":
             self.statusbar.showMessage("No Internet Connection")
         elif self.speechToTextObject.returnString() == "":
-            self.statusbar.showMessage("Google Speech Recognition could not understand audio")
+            self.statusbar.showMessage("Googe Speech Recognition could not understand audio")
         else:
             self.s = self.speechToTextObject.returnString()
             self.statusbar.showMessage("You Said: " + self.speechToTextObject.returnString())
-            code = self.converterObject.code(self.s);
+            code = self.converterObject.convert(self.s);
             self.textEdit.insertPlainText(code)
 
     def convert(self):
@@ -431,11 +420,6 @@ class UiMainWindow(object):
 
     def changeSilentTime(self, value=1):
         self.speechToTextObject.silenttime = value
-
-    def fontPicker(self):
-        f, ok = QFontDialog.getFont()
-        if ok:
-            print("helll")
 
     def showDialog(self):
         text, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter your name:')
