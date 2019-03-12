@@ -52,6 +52,16 @@ class Converter:
             return "boolean"
         return "string"
 
+    def optimizeOperation(self, string):
+        operations = {"plus": "+",
+                      "minus": "-",
+                      "times": "*",
+                      "quotient": "/",
+                      "reminder": "%"}
+        for op in operations:
+            string = string.replace(op, operations[op])
+        return string
+
     def convert(self, input):
         input = self.optimizeInputString(input).lower()
         words = input.split()
@@ -100,7 +110,22 @@ class Converter:
                     words[-1] = "'" + words[-1] + "'"
                 elif variableType == "string":
                     words[-1] = '"' + words[-1] + '"'
-                return words[1] + " " + words[2] + " " + words[3] + " " + words[4]
+                return words[1] + " " + words[2] + " " + words[3] + " " + words[4] + ";"
+
+            if words[1] == "operation":
+                ans = ""
+                input = self.optimizeOperation(input)
+                words = input.split()
+                if words[4] not in self.variable or words[6] not in self.variable:
+                    return "arg variables are not defined"
+                if self.variable[words[4]] == self.variable[words[6]]:
+                    if words[2] not in self.variable:
+                        ans = self.variable[words[4]] + " "
+                        self.variable[words[2]] = self.variable[words[4]]
+                    ans = ans + words[2] + words[3] + words[4] + words[5] + words[6] + ";"
+                    return ans
+                else:
+                    return "arg1 and arg2 are not same type"
 
         elif "declare" == words[0]:
             if words[2] in self.variable:

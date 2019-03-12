@@ -11,7 +11,6 @@ import subprocess
 # WARNING! All changes made in this file will be lost!
 import threading
 import tkinter as tk
-from subprocess import STDOUT, PIPE
 from tkinter import filedialog
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -360,17 +359,6 @@ class UiMainWindow(object):
         else:
             self.statusbar.showMessage("please select a file to compile")
 
-    def e1xecute_java(self):
-        java_class, ext = os.path.splitext(self.file_path)
-        cmd = ['java', java_class]
-        print(java_class)
-        proc = subprocess.Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-        print("hi")
-        # input1=subprocess.Popen(cmd,stdin=PIPE)
-        print(proc.stdout.read())
-        stdout, stderr = proc.communicate(stdin)
-        print('This was "' + stdout + '"')
-        print(stderr)
 
     def execute_java(self):
         if self.file_path:
@@ -421,11 +409,6 @@ class UiMainWindow(object):
     def changeSilentTime(self, value=1):
         self.speechToTextObject.silenttime = value
 
-    def showDialog(self):
-        text, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter your name:')
-
-        if ok:
-            self.le.setText(str(text))
 
 
 if __name__ == "__main__":
