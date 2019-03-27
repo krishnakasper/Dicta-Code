@@ -44,7 +44,7 @@ class SpeechToText:
         self.returnString()
 
     def is_connected(self):
-        print("conneced")
+        print("connected")
         try:
             # connect to the host -- tells us if the host is actually
             # reachable

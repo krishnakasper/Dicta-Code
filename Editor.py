@@ -16,7 +16,9 @@ from tkinter import filedialog
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QSize
 
-from Converter import Converter
+from CpCode import CpCode
+from JavaCode import JavaCode
+from PythonCode import PythonCode
 from SpeechToText import SpeechToText
 
 
@@ -24,7 +26,6 @@ class UiMainWindow(object):
     textEdit = None
     file_path = None
     speechToTextObject = SpeechToText()
-    converterObject = Converter()
 
     def setupUi(self, main_window):
         main_window.setObjectName("MainWindow")
@@ -82,7 +83,7 @@ class UiMainWindow(object):
         self.compileButton.setIcon(icon2)
         self.compileButton.setIconSize(QSize(40, 40))
         self.compileButton.setObjectName("toolButton_3")
-        self.compileButton.clicked.connect(self.compile_java)
+        self.compileButton.clicked.connect(self.compile)
 
         # open button
         self.openFileButton = QtWidgets.QToolButton(self.centralwidget)
@@ -253,28 +254,52 @@ class UiMainWindow(object):
 
     # onclick functions for buttons
 
+    def createConverter(self, fileType):
+        print(fileType)
+        if fileType == "java":
+            self.converterObject = JavaCode()
+        elif fileType == "cpp":
+            self.converterObject = CpCode()
+        else:
+            self.converterObject = PythonCode()
+
     def new_file(self):
 
         root = tk.Tk()
         root.withdraw()
         self.file_path = filedialog.asksaveasfilename(title="New File", filetypes=[("Java File", "*.java"),
-                                                                                   ("Python File", "*.py")])
+                                                                                   ("Python File", "*.py"),
+                                                                                   ("Cpp File", "*.cpp")])
         if self.file_path:
             print(self.file_path)
             f = self.file_path
             fileName = ntpath.basename(self.file_path)
             print(fileName)
+            self.createConverter(fileName[fileName.rindex(".") + 1:])
             print(fileName[0:fileName.rindex(".")])
             file1 = open(f, "w")
-            x = """class """ + fileName[0:fileName.rindex(".")] + """
+            if fileName[fileName.rindex(".") + 1:] == "java":
+                x = """class """ + fileName[0:fileName.rindex(".")] + """
 {
     public static void main(String args[])
     {
-
+    
     }
-
+    
 }
 """
+            elif fileName[fileName.rindex(".") + 1:] == "cpp":
+                x = """#include <iostream>
+using namespace std;
+
+int main() 
+{
+    cout << "Hello, World!";
+    return 0;
+}
+"""
+            else:
+                x = ""
             self.textEdit.setText(str(x))
             file1.close()
             self.statusbar.showMessage("File Created")
@@ -327,9 +352,11 @@ class UiMainWindow(object):
         root = tk.Tk()
         root.withdraw()
         file_path = filedialog.askopenfilename(filetypes=[("Java File", "*.java"),
-                                                          ("Python File", "*.py")])
-
+                                                          ("Python File", "*.py"),
+                                                          ("Cpp File", "*.cpp")])
         print(file_path)
+        self.createConverter(file_path[file_path.rindex(".") + 1:])
+
         if file_path:
             self.file_path = file_path
         print(self.file_path)
@@ -351,6 +378,30 @@ class UiMainWindow(object):
         if self.textEdit:
             self.textEdit.redo()
 
+    def compile(self, fileType):
+        if fileType == "java":
+            self.compile_java()
+        elif fileType == "cpp":
+            self.compile_java()
+        else:
+            self.compile_java()
+
+    def compile_cpp(self):
+        if self.file_path:
+            cmd = 'g++ ' + self.file_path
+            proc = subprocess.Popen(cmd, shell=True)
+            self.statusbar.showMessage("File Compiled")
+        else:
+            self.statusbar.showMessage("please select a file to compile")
+
+    def compile_python(self):
+        if self.file_path:
+            cmd = 'python ' + self.file_path
+            proc = subprocess.Popen(cmd, shell=True)
+            self.statusbar.showMessage("File Compiled")
+        else:
+            self.statusbar.showMessage("please select a file to compile")
+
     def compile_java(self):
         if self.file_path:
             cmd = 'javac ' + self.file_path
@@ -359,12 +410,13 @@ class UiMainWindow(object):
         else:
             self.statusbar.showMessage("please select a file to compile")
 
-
     def execute_java(self):
+
         if self.file_path:
             java_class, ext = os.path.splitext(self.file_path)
-            cmd = ['java', java_class]
-            subprocess.call(cmd, shell=False)
+            cmd = ['java', java_class + ".class"]
+            print(cmd)
+            subprocess.call(cmd, shell=True)
             self.statusbar.showMessage("File Executed")
         else:
             self.statusbar.showMessage("please select a file to run")
@@ -374,13 +426,9 @@ class UiMainWindow(object):
         path = os.getcwd()
         return path
 
-
-
     def threadListen(self):
         thread = threading.Thread(target=self.start_listening)
         thread.start()
-
-
 
     def start_listening(self):
         self.statusbar.showMessage("Listening")
@@ -394,7 +442,10 @@ class UiMainWindow(object):
         else:
             self.s = self.speechToTextObject.returnString()
             self.statusbar.showMessage("You Said: " + self.speechToTextObject.returnString())
-            code = self.converterObject.convert(self.s);
+            try:
+                code = self.converterObject.convert(self.s)
+            except:
+                code = "error"
             self.textEdit.insertPlainText(code)
 
     def convert(self):
@@ -408,8 +459,6 @@ class UiMainWindow(object):
 
     def changeSilentTime(self, value=1):
         self.speechToTextObject.silenttime = value
-
-
 
 if __name__ == "__main__":
     import sys
