@@ -98,15 +98,15 @@ class UiMainWindow(object):
         self.openFileButton.clicked.connect(self.open_file)
 
         # run button
-        self.executeButton = QtWidgets.QToolButton(self.centralwidget)
-        self.executeButton.setGeometry(QtCore.QRect(300, 3, 40, 40))
-        self.executeButton.setStatusTip("")
-        icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(program_path + "/icons/runFile.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.executeButton.setIcon(icon4)
-        self.executeButton.setIconSize(QSize(40, 40))
-        self.executeButton.setObjectName("toolButton_5")
-        self.executeButton.clicked.connect(self.execute_java)
+        # self.executeButton = QtWidgets.QToolButton(self.centralwidget)
+        # self.executeButton.setGeometry(QtCore.QRect(300, 3, 40, 40))
+        # self.executeButton.setStatusTip("")
+        # icon4 = QtGui.QIcon()
+        # icon4.addPixmap(QtGui.QPixmap(program_path + "/icons/runFile.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        # self.executeButton.setIcon(icon4)
+        # self.executeButton.setIconSize(QSize(40, 40))
+        # self.executeButton.setObjectName("toolButton_5")
+        # self.executeButton.clicked.connect(self.execute_java)
         # self.toolButton_5.clicked.connect(self.toolButton, self.fontPicker())
 
         # close button
@@ -232,8 +232,8 @@ class UiMainWindow(object):
         self.compileButton.setText(_translate("MainWindow", "..."))
         self.openFileButton.setToolTip(_translate("MainWindow", "Open File"))
         self.openFileButton.setText(_translate("MainWindow", "..."))
-        self.executeButton.setToolTip(_translate("MainWindow", "Run"))
-        self.executeButton.setText(_translate("MainWindow", "..."))
+        # self.executeButton.setToolTip(_translate("MainWindow", "Run"))
+        # self.executeButton.setText(_translate("MainWindow", "..."))
         self.closeFileButton.setToolTip(_translate("MainWindow", "Close File"))
         self.closeFileButton.setText(_translate("MainWindow", "..."))
         self.startButton.setText(_translate("MainWindow", "Start"))
@@ -351,17 +351,13 @@ int main()
     def open_file(self):
         root = tk.Tk()
         root.withdraw()
-        file_path = filedialog.askopenfilename(filetypes=[("Java File", "*.java"),
-                                                          ("Python File", "*.py"),
-                                                          ("Cpp File", "*.cpp")])
-        print(file_path)
-        self.createConverter(file_path[file_path.rindex(".") + 1:])
+        self.file_path = filedialog.askopenfilename(filetypes=[("Java File", "*.java"),
+                                                               ("Python File", "*.py"),
+                                                               ("Cpp File", "*.cpp")])
 
-        if file_path:
-            self.file_path = file_path
-        print(self.file_path)
         t = ""
         if self.file_path:
+            self.createConverter(self.file_path[self.file_path.rindex(".") + 1:])
             file1 = open(self.file_path, "r")
             for x in file1.readlines():
                 print(x)
